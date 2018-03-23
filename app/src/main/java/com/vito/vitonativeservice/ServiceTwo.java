@@ -27,7 +27,7 @@ public class ServiceTwo extends Service {
             TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
-                    Log.e(TAG,"ServerTwo Run:"+System.currentTimeMillis());
+                    //Log.e(TAG,"ServerTwo Run:"+System.currentTimeMillis());
                     boolean b = MainActivity.isServiceWorked(ServiceTwo.this,"com.vito.vitonativeservice.ServiceOne");
                     if(!b){
                         Intent service = new Intent(ServiceTwo.this,ServiceOne.class);
@@ -35,7 +35,7 @@ public class ServiceTwo extends Service {
                     }
                 }
             };
-            timer.schedule(task,0,5000);
+            timer.schedule(task,0,1000);
         }
     });
     @Override
