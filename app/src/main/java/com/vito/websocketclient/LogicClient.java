@@ -2,6 +2,7 @@ package com.vito.websocketclient;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Path;
 import android.os.Environment;
@@ -160,6 +161,7 @@ public class LogicClient {
                     String appid=object.getString("appid");
                     String versionCode=object.getString("versioncode");
                     int fileType=object.getInt("file_type");
+                    String boundleId=object.getString("boundle_id");
                     String targetPath=object.getString("target_path");
                     String filePath=Environment.getExternalStorageDirectory().getPath()+"/vitoresources/update/"+appid +"/";
                     File dir= new File( filePath);
@@ -176,30 +178,49 @@ public class LogicClient {
                     }
                     File localfile= new File( filePath+fileName);
                     String md5="-1";
-
-                    if(localfile.exists())
+                    int theversionCode=-1;
+                    if(fileType==1) {
+                        try {
+                            PackageInfo pinfo = context.getPackageManager().getPackageInfo(boundleId, 0);
+                            theversionCode = pinfo.versionCode;
+                            Log.i(TAG, "request" + boundleId + "exist" + theversionCode + ":" + versionCode);
+                        } catch (PackageManager.NameNotFoundException e) {
+                            Log.i(TAG, "request" + boundleId + "not exist");
+                        }
+                    }
+                    boolean appexist=false;
+                    if((theversionCode!=-1)&& (theversionCode==Integer.parseInt( versionCode))){
+                        appexist=true;
+                        Log.i(TAG,"request"+boundleId+"exist and version ok");
+                    }
+                    if(!appexist&&localfile.exists())
                     {
                         md5= getMD5(localfile);
                     }
                     Log.i(TAG,"remoteMd5:"+remotemd5+" localMd5:"+md5);
-                    if(!md5.equals(remotemd5))
+                    if(!appexist&&!md5.equals(remotemd5))
                     {
                         Log.i(TAG,"downloadURL:"+downloadURL+" target:"+filePath+" filename:"+fileName);
                         StartDownload(downloadURL,filePath,fileName,fileType,appid,targetPath);
                     }else{
-                        Log.i(TAG,"本地文件已存在，不需要下载");
+                        Log.i(TAG,"本地文件或者APP已存在，不需要下载");
                         if(fileType==1)
                         {
-                            InstallAPK(context,filePath+fileName);
-                            try{
-                                JSONObject js=new JSONObject();
-                                js.put("id",bindId);
-                                js.put("p",1);
-                                js.put("appid",appid);
-                                SendMessage(LogicClientKey.MsgType_RequestOtherFile,js);
-                            }catch (Exception e){
-                                Log.e(TAG,e.getMessage());
+                            if(!appexist){
+                                InstallAPK(context,filePath+fileName);
+                            }else {
+                                Log.i(TAG, "APP已存在");
+                                try {
+                                    JSONObject js = new JSONObject();
+                                    js.put("id", bindId);
+                                    js.put("p", 1);
+                                    js.put("appid", appid);
+                                    SendMessage(LogicClientKey.MsgType_RequestOtherFile, js);
+                                } catch (Exception e) {
+                                    Log.e(TAG, e.getMessage());
+                                }
                             }
+
                         }else if(fileType==2) {
                             new Decompress(context,localfile).unzip(targetPath);
                             //Unzip(filePath+fileName,targetPath);
