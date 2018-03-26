@@ -16,6 +16,8 @@ public class LogicClientKey {
     public static final int MsgType_DownloadOver=6;
     public static final int MsgType_RequestOtherFile=7;
     public static final int MsgType_SingleDownload=8;
+    public static final int MsgType_UnZipResources=9;
+    public static final int MsgType_UnZipResourcesOver=10;
     public static final int MsgType_ConnectToServer=1001;
     public static final int MsgType_GetUserMsg=1002;
     public static final int MsgType_GetFile=1003;

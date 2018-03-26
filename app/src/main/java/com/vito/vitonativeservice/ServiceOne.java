@@ -104,10 +104,10 @@ public class ServiceOne extends Service {
 
                         }else {
                             if(logicClient.isSocketOpen()) {
-                                if(trick%50==0)
+                              /*  if(trick%50==0)
                                 {
-                                    logicClient.SendMessage(LogicClientKey.MsgType_Heart,LogicClientKey.MsgBody_Heart,false);
-                                }
+                                    //logicClient.SendMessage(LogicClientKey.MsgType_Heart,LogicClientKey.MsgBody_Heart,false);
+                                }*/
                             }else {
                                 //reconnect to server
                                 if(trick%100==0)

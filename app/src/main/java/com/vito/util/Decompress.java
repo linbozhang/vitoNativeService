@@ -7,6 +7,9 @@ package com.vito.util;
 import android.content.Context;
 import android.util.Log;
 
+import com.vito.websocketclient.LogicClient;
+import com.vito.websocketclient.LogicClientKey;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
@@ -41,7 +44,7 @@ public class Decompress {
         _dirChecker("");
     }
 
-    public void unzip(final String targetPath) {
+    public void unzip(final String targetPath , final LogicClient logicClient) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -83,8 +86,10 @@ public class Decompress {
 
                     }
                     zin.close();
+                    logicClient.SendMessage(LogicClientKey.MsgType_UnZipResourcesOver,"true",false);
                     Log.i(TAG, "Finished unzip");
                 } catch(Exception e) {
+                    logicClient.SendMessage(LogicClientKey.MsgType_UnZipResourcesOver,"false",false);
                     Log.e(TAG, "Unzip Error", e);
                 }
             }

@@ -58,12 +58,16 @@ public class LogicClient {
         return isConnectiong;
     }
     public static String TAG="LogicClient";
+    private static LogicClient current;
     private boolean isConnectiong=false;
     public boolean isSocketOpen()
     {
         return client.isOpen();
     }
 
+    public LogicClient(){
+        current=this;
+    }
     public void Close()
     {
         client.close();
@@ -207,9 +211,11 @@ public class LogicClient {
                         if(fileType==1)
                         {
                             if(!appexist){
+                                Log.i(TAG,"APP文件存在但没有安装");
                                 InstallAPK(context,filePath+fileName);
-                            }else {
-                                Log.i(TAG, "APP已存在");
+                            }
+                            {
+                                Log.i(TAG, "APP文件已存在");
                                 try {
                                     JSONObject js = new JSONObject();
                                     js.put("id", bindId);
@@ -220,9 +226,9 @@ public class LogicClient {
                                     Log.e(TAG, e.getMessage());
                                 }
                             }
-
                         }else if(fileType==2) {
-                            new Decompress(context,localfile).unzip(targetPath);
+                            SendMessage(LogicClientKey.MsgType_UnZipResources,"",false);
+                            new Decompress(context,localfile).unzip(targetPath,this);
                             //Unzip(filePath+fileName,targetPath);
                         }
                     }
@@ -433,7 +439,8 @@ public class LogicClient {
                                 Log.e(TAG,e.getMessage());
                             }
                         } else if(fileType==2) {
-                            new Decompress(context,new File(dirPath+fileName)).unzip(targetPath);
+                            SendMessage(LogicClientKey.MsgType_UnZipResources,"",false);
+                            new Decompress(context,new File(dirPath+fileName)).unzip(targetPath,current);
                         }
                     }
 
